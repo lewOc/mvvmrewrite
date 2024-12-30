@@ -34,6 +34,9 @@ struct WardrobeView: View {
             } message: {
                 Text(viewModel.errorMessage ?? "An unknown error occurred")
             }
+            .sheet(isPresented: $viewModel.showTryOnView) {
+                TryOnItemView(modelContext: viewModel.modelContext)
+            }
         }
     }
     
@@ -126,17 +129,3 @@ struct WardrobeView: View {
     }
 }
 
-#Preview {
-    let config = ModelConfiguration(isStoredInMemoryOnly: true)
-    let container = try! ModelContainer(for: WardrobeItem.self, configurations: config)
-    
-    // Add some preview data
-    let context = container.mainContext
-    let previewItems = [
-        WardrobeItem(name: "Blue T-Shirt", category: .tops),
-        WardrobeItem(name: "Black Jeans", category: .bottoms)
-    ]
-    previewItems.forEach { context.insert($0) }
-    
-    return WardrobeView(modelContext: container.mainContext)
-} 

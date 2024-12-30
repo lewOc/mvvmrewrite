@@ -24,10 +24,16 @@ final class WardrobeItem {
     }
 }
 
-enum ItemCategory: String, Codable {
-    case tops
-    case bottoms
-    case outerwear
-    case shoes
-    case accessories
+enum ItemCategory: String, Codable, CaseIterable {
+    case tShirt = "tshirt"
+    case trousers
+    case dress
+    
+    var displayName: String {
+        switch self {
+        case .tShirt: return "T-Shirt"
+        case .trousers: return "Trousers"
+        case .dress: return "Dress"
+        }
+    }
 } 

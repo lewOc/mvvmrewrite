@@ -6,8 +6,9 @@ final class WardrobeViewModel: ObservableObject {
     @Published var isLoading = false
     @Published var errorMessage: String?
     @Published var showError = false
+    @Published var showTryOnView = false
     
-    private let modelContext: ModelContext
+    let modelContext: ModelContext
     
     init(modelContext: ModelContext) {
         self.modelContext = modelContext
@@ -35,7 +36,7 @@ final class WardrobeViewModel: ObservableObject {
     }
     
     func handleTryOnItem() {
-        // Handle try on item action
+        showTryOnView = true
     }
     
     func handleAddItem() {

@@ -14,7 +14,11 @@ struct HANGRRApp: App {
     
     init() {
         do {
-            let schema = Schema([WardrobeItem.self])
+            let schema = Schema([
+                WardrobeItem.self,
+                TryOnSession.self,
+                TryOnResult.self
+            ])
             let modelConfiguration = ModelConfiguration(schema: schema)
             container = try ModelContainer(for: schema, configurations: modelConfiguration)
         } catch {

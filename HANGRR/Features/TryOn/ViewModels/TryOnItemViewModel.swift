@@ -3,52 +3,59 @@ import SwiftData
 
 @MainActor
 final class TryOnItemViewModel: ObservableObject {
-    @Published var selectedItem: WardrobeItem?
+    @Published var userImage: UIImage?
+    @Published var garmentImage: UIImage?
+    @Published var selectedCategory: ItemCategory?
     @Published var isLoading = false
     @Published var error: Error?
     @Published var showError = false
-    @Published var isCameraActive = false
-    @Published var currentSession: TryOnSession?
+    @Published var resultImageURL: URL?
+    
+    var canTryOn: Bool {
+        userImage != nil && garmentImage != nil && selectedCategory != nil
+    }
     
     private let modelContext: ModelContext
-    private let tryOnService: TryOnService
+    private let fashnService: FashnAPIService
     
-    init(modelContext: ModelContext, tryOnService: TryOnService = TryOnService()) {
+    init(modelContext: ModelContext, fashnService: FashnAPIService) {
         self.modelContext = modelContext
-        self.tryOnService = tryOnService
+        self.fashnService = fashnService
     }
     
-    func startSession(with item: WardrobeItem) {
-        isLoading = true
-        
-        let session = TryOnSession(wardrobeItem: item)
-        modelContext.insert(session)
-        currentSession = session
-        
-        do {
-            try modelContext.save()
-            selectedItem = item
-            isLoading = false
-        } catch {
-            self.error = error
+    func generateTryOn() async {
+        guard canTryOn,
+              let userImage = userImage,
+              let garmentImage = garmentImage,
+              let userImageData = userImage.jpegData(compressionQuality: 0.8),
+              let garmentImageData = garmentImage.jpegData(compressionQuality: 0.8) else {
+            error = FashnAPIError.requestFailed("Missing required images")
             showError = true
-            isLoading = false
+            return
         }
-    }
-    
-    func captureImage() async {
-        guard let session = currentSession else { return }
         
         isLoading = true
+        
         do {
-            let result = try await tryOnService.captureImage(session: session)
+            let resultURL = try await fashnService.generateTryOn(
+                userImage: userImageData,
+                garmentImage: garmentImageData
+            )
+            
+            let session = TryOnSession(status: .completed)
+            let result = TryOnResult(imageURL: resultURL, session: session)
+            
+            modelContext.insert(session)
             modelContext.insert(result)
             try modelContext.save()
-            isLoading = false
+            
+            resultImageURL = resultURL
+            
         } catch {
             self.error = error
             showError = true
-            isLoading = false
         }
+        
+        isLoading = false
     }
 } 
