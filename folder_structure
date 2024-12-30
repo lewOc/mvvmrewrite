@@ -1,0 +1,18 @@
+HANGRR/
+├── Features/
+│   └── Wardrobe/
+│       ├── Models/
+│       │   └── WardrobeItem.swift
+│       ├── ViewModels/
+│       │   └── WardrobeViewModel.swift
+│       └── Views/
+│           ├── WardrobeView.swift
+│           └── Components/
+│               ├── ActionButtonView.swift
+│               └── WardrobeItemsGridView.swift
+├── Core/
+│   └── Services/
+│       └── WardrobeDataService.swift
+└── Shared/
+    └── Components/
+        └── ProfileButtonView.swift 
